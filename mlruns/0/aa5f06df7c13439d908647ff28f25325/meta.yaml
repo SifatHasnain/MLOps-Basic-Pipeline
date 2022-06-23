@@ -1,0 +1,15 @@
+artifact_uri: file:///mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/mlruns/0/aa5f06df7c13439d908647ff28f25325/artifacts
+end_time: 1655960971025
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+name: ''
+run_id: aa5f06df7c13439d908647ff28f25325
+run_uuid: aa5f06df7c13439d908647ff28f25325
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1655958285057
+status: 3
+tags: []
+user_id: root

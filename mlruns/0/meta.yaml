@@ -1,0 +1,4 @@
+artifact_location: file:///mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/mlruns/0
+experiment_id: '0'
+lifecycle_stage: active
+name: Experiment 1
