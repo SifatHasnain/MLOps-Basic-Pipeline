@@ -1,4 +1,3 @@
-tensorflow-gpu
 tensorflow
 tqdm
 pathlib
