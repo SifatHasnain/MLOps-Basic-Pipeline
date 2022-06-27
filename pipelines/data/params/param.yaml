@@ -1,0 +1,26 @@
+lake_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/storage/Lake/train"
+# lake_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/storage/Lake/dogcat/train"
+# lake_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/storage/Lake/mnist/train"
+warehouse_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test//MLOps-Basic-Pipeline/storage/data-warehouse"
+# warehouse_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test//MLOps-Basic-Pipeline/storage/dogcat/data-warehouse"
+# warehouse_dir: "/mnt/c/Users/BS505/GitHub_Desktop/test//MLOps-Basic-Pipeline/storage/dogcat/data-warehouse"
+version: "version 1"
+log_folder: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/pipelines/dags/data/log"
+figure_folder: "/mnt/c/Users/BS505/GitHub_Desktop/test/MLOps-Basic-Pipeline/pipelines/dags/data/figures"
+
+extention: '.jpg'
+num_classes: 2
+class_names: ['cat', 'dog']
+
+# num_classes: 10
+# class_names: [0, 1, 2, 3, 4, 5, 6,7,8,9]
+seed: 123
+
+# eda
+blur_threshold: 0.95
+similarity_threshold: 1.05
+
+# preprocess
+test_ratio: 0.2
+delete_blur_image: False
+delete_duplicate_image: False
