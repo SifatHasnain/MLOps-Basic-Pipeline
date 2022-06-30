@@ -6,7 +6,7 @@ from tensorflow import keras
 from sklearn.metrics import confusion_matrix
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
-from keras.losses import SparseCategoricalCrossentropy 
+from tensorflow.keras.losses import SparseCategoricalCrossentropy 
 
 def loss(model, x, y, training):
     # training=training is needed only if there are layers with different
@@ -32,17 +32,17 @@ def generate_train_dataset(data_dir, batch_size):
                                                         batch_size=batch_size,
                                                         seed=1,
                                                         shuffle=True,
-                                                        class_mode="categorical")
+                                                        class_mode="sparse")
 
     #valid
     valid_datagen = ImageDataGenerator(rescale=1.0/255.0)
     valid_generator = valid_datagen.flow_from_directory(os.path.join(data_dir, 'val'),
                                                         target_size=(227, 227),
                                                         color_mode="rgb",
-                                                        batch_size=batch_size,
+                                                        batch_size=50,
                                                         seed=7,
                                                         shuffle=True,
-                                                        class_mode="categorical"
+                                                        class_mode="sparse"
                                                         )
     
     return train_generator, valid_generator

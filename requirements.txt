@@ -1,5 +1,5 @@
-tensorflow-gpu
-tensorflow
+tensorflow==2.4.0
+tensorflow-gpu==2.4.0
 tqdm
 pathlib
 pandas

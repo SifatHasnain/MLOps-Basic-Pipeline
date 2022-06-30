@@ -15,7 +15,7 @@ print(root_dir)
 
 default_args = {
     'owner': 'airflow',
-    'depends_on_past': True 
+    'depends_on_past': False 
 }
 
 def eda_task(file_name="params/param.yaml"):
@@ -69,7 +69,7 @@ def data():
 @dag(
     dag_id="model_pipeline",
     start_date=datetime(2022, 1 ,1), 
-    schedule_interval=None, 
+    schedule_interval=None,#'@hourly', 
     default_args=default_args,
     catchup=False
 )

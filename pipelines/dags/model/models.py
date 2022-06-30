@@ -249,7 +249,7 @@ class Conv_Block(layers.Layer):
   
 class ResNet(Model):
     def __init__(self, input_shape, num_classes):
-        super(ResNet, self).__init__(name='resnet')
+        super(Resnet, self).__init__(name='resnet')
         # X = Input(self.input_shapes)
         self.zero_padding = ZeroPadding2D((3, 3), data_format='channels_last', input_shape=input_shape)
         
@@ -407,32 +407,34 @@ class InceptionNet(Model):
   def __init__(self, input_shape, num_classes, num_filters, problem_type='Regression', pooling='avg', dropout_rate=False):
         super(InceptionNet, self).__init__(name='InceptionNet')
 
-        # self.inputs = tf.keras.layers.Input(input_shape)
-        self.stem_conv7x7 = Conv_2D_Block(num_filters, (7, 7), input_shape, strides=(2, 2))
+        self.inputs = tf.keras.layers.Input(input_shape)
+        self.stem_conv7x7 = Conv_2D_Block(num_filters, (7, 7), strides=(2, 2))
         self.stem_maxPool_1 = MaxPooling2D((3, 3), strides=(2, 2))
-        self.stem_conv3x3 = Conv_2D_Block(num_filters*3, (3, 3), input_shape)
-        self.stem_conv1x1 = Conv_2D_Block(num_filters, (1, 1), input_shape, strides=(2, 2))
+        self.stem_conv3x3 = Conv_2D_Block(num_filters*3, (3, 3))
+        self.stem_conv1x1 = Conv_2D_Block(num_filters, (1, 1), strides=(2, 2))
         self.stem_maxPool_2 = MaxPooling2D((3, 3), strides=(2, 2))
-        self.inception_block_1 = Inceptionv1_Module(64, 96, 128, 16, 32, 32, 1, input_shape)
-        self.inception_block_2 = Inceptionv1_Module(128, 128, 192, 32, 96, 64, 2, input_shape)
-        self.inception_block_3 = Inceptionv1_Module(192, 96, 208, 16, 48, 64, 3, input_shape)
-        self.inception_block_4 = Inceptionv1_Module(160, 112, 224, 24, 64, 64, 4, input_shape)
-        self.inception_block_5 = Inceptionv1_Module(128, 128, 256, 24, 64, 64, 5, input_shape)
-        self.inception_block_6 = Inceptionv1_Module(112, 144, 288, 32, 64, 64, 6, input_shape)
-        self.inception_block_7 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 7, input_shape)
-        self.inception_block_8 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 8, input_shape)
-        self.inception_block_9 = Inceptionv1_Module(384, 192, 384, 48, 128, 128, 9, input_shape)
+        self.inception_block_1 = Inceptionv1_Module(64, 96, 128, 16, 32, 32, 1)
+        self.inception_block_2 = Inceptionv1_Module(128, 128, 192, 32, 96, 64, 2)
+        self.inception_block_3 = Inceptionv1_Module(192, 96, 208, 16, 48, 64, 3)
+        self.inception_block_4 = Inceptionv1_Module(160, 112, 224, 24, 64, 64, 4)
+        self.inception_block_5 = Inceptionv1_Module(128, 128, 256, 24, 64, 64, 5)
+        self.inception_block_6 = Inceptionv1_Module(112, 144, 288, 32, 64, 64, 6)
+        self.inception_block_7 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 7)
+        self.inception_block_8 = Inceptionv1_Module(256, 160, 320, 32, 128, 128, 8)
+        self.inception_block_9 = Inceptionv1_Module(384, 192, 384, 48, 128, 128, 9)
         self.maxPool1 = MaxPooling2D((3, 3), strides=(2, 2))
         self.maxPool2 = MaxPooling2D((3, 3), strides=(2, 2))
-        self.auxiliary_output_1 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 1, input_shape)
-        self.auxiliary_output_2 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 2, input_shape)
-        self.final_output = MLP(pooling, dropout_rate, problem_type, num_classes)
+        self.auxiliary_output_1 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 1)
+        self.auxiliary_output_2 = Auxilliary_Module(pooling, dropout_rate, problem_type, num_classes, 2)
+        self.final_output = MLP(self.pooling, self.dropout_rate, self.problem_type, self.num_classes)
         
 
-  def call(self, X):
-        # inputs = self.inputs(X)
+  def call(self, X, training=False):
+        aux_output_1 = None
+        aux_output_2 = None
+        inputs = self.inputs(X)
         # Stem
-        x = self.stem_conv7x7(X)
+        x = self.stem_conv7x7(inputs)
         x = self.stem_maxPool_1(x)
         x = self.stem_conv3x3(x)
         x = self.stem_conv1x1(x)
@@ -441,7 +443,8 @@ class InceptionNet(Model):
         x = self.inception_block_1(x)  # Inception Block 1
         x = self.inception_block_2(x)  # Inception Block 2
 
-        aux_output_0 = self.auxiliary_output_1(x)
+        if training:
+            aux_output_0 = self.auxiliary_output_1(x)
 
         x = self.maxPool1(x)
         x = self.inception_block_3(x)  # Inception Block 3
@@ -450,7 +453,8 @@ class InceptionNet(Model):
         x = self.inception_block_6(x)  # Inception Block 6
         x = self.inception_block_7(x)  # Inception Block 7
 
-        aux_output_1 = self.auxiliary_output_2(x)
+        if training:
+            aux_output_1 = self.auxiliary_output_1(x)
 
         x = self.maxPool2(x)
         x = self.inception_block_8(x)  # Inception Block 8

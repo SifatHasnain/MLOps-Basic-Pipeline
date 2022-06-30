@@ -15,8 +15,9 @@ import tensorflow as tf
 from tensorflow.keras.callbacks import ReduceLROnPlateau
 
 import models
+# from utils import generate_train_dataset, loss
 from augment import transform_train, transform_val
-from models import AlexNet, CNN, ResNet
+from models import AlexNet, CNN, Resnet, InceptionNet
 from train import Trainer
 from val import Val
 
@@ -45,6 +46,8 @@ val_loader = CustomDataset(root_dir = config['data_dir'], batch_size = hyp['batc
 inception = False
 print("Number of training samples = ",len(train_loader))
 print("Number of testing samples = ",len(val_loader))
+inception = False
+rlrop = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10)
 
 if hyp['model'] == "cnn":
     model = CNN(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
@@ -56,17 +59,34 @@ elif hyp['model'] == "inceptionv1":
     model = models.InceptionNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'], num_filters=64, problem_type="Classification", dropout_rate=0.4)
     inception = True
 
-learning_rate_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=20, decay_rate=hyp['decay_rate'])
+if hyp['model'] == "cnn":
+    model = CNN(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+elif hyp['model'] == "alexnet":
+    model = AlexNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+elif hyp['model'] == "resnet":
+    model = ResNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'])
+elif hyp['model'] == "inceptionv1":
+    model = models.InceptionNet(input_shape=(config['image_height'], config['image_width'], config['num_channels']), num_classes=config['num_classes'], num_filters=64, problem_type="Classification", dropout_rate=0.4)
+    inception = True
+
+# learning_rate_scheduler = tf.keras.optimizers.schedules.ExponentialDecay(initial_learning_rate=hyp['lr'], decay_steps=len(train_loader), decay_rate=hyp['decay_rate'])
 
 if hyp['optimizer_fn'] == 'sgd':
-    optimizer = tf.keras.optimizers.SGD(learning_rate_scheduler, hyp['momentum'])
+    optimizer = tf.keras.optimizers.SGD(hyp['lr'], hyp['momentum'])
 elif hyp['optimizer_fn'] == 'adam':
-    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate_scheduler)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=hyp['lr'])
 elif hyp['optimizer_fn'] == 'rmsprop':
-    optimizer = tf.keras.optimizers.RMSprop(learning_rate=learning_rate_scheduler) #,momentum=hyp['momentum']
-     
+    optimizer = tf.keras.optimizers.RMSprop(learning_rate=hyp['lr']) #,momentum=hyp['momentum']
+
+model.compile(optimizer= optimizer)
+
+callback_list = [rlrop]
+callbacks = tf.keras.callbacks.CallbackList(
+    callback_list, add_history=True, model=model)
+
 trainer = Trainer(train_loader, inception=inception)
 val = Val(val_loader, inception=inception)
+
 training_log = {}
 
 
@@ -79,17 +99,20 @@ experiment_id = mlflow.set_experiment(experiment_name=config['mlflow_experiment_
 best_acc, best_epoch = 0, 0
 SAVED_MODEL_PATH = os.path.join(config['artifact_path'], config['mlflow_experiment_name'], config['mlflow_run_name'])
 os.makedirs(SAVED_MODEL_PATH, exist_ok=True)
-
+logs = {}
+callbacks.on_train_begin(logs=logs)
 # log file
 df = pd.DataFrame(columns = ['epoch', 'lr', 'train_acc', 'train_loss', 'val_loss', 'val_acc'])
 
 with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experiment_id.experiment_id) as run:
     mlflow.log_params(hyp)
     for epoch in range(hyp['epochs']):
+        callbacks.on_epoch_begin(epoch)
         print(f"Epoch: {epoch+1}/{hyp['epochs']}")
-        model, optimizer, train_loss, train_acc = trainer.run(model, optimizer)    
-        val_loss, val_acc = val.run(model)
+        model, optimizer, train_loss, train_acc = trainer.run(model, optimizer,callbacks)    
+        val_loss, val_acc = val.run(model, callbacks)
         lr = optimizer.lr
+        logs['val_loss'] = val_loss
         df = df.append({'epoch': epoch+1, 'lr': lr, 'train_acc': train_acc, 'train_loss': train_loss, 'val_loss': val_loss, 'val_acc': val_acc}, ignore_index = True)
         """
         train loss, val loss, val acc, per class accuracy, learning rate -> store in ./log/log.csv
@@ -104,6 +127,7 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
 
         model_name="{}_{}_dogcat_last_model".format(hyp['model'], config['version'])
         model.save(os.path.join(SAVED_MODEL_PATH, model_name))
+    
         # mlflow log metrics
         metrics = {
             "val acc": val_acc,
@@ -112,7 +136,9 @@ with mlflow.start_run(run_name=config['mlflow_run_name'], experiment_id=experime
             "train_loss": train_loss
         }
         mlflow.log_metrics(metrics, step=epoch+1)
-    
+        callbacks.on_epoch_end(epoch, logs=logs)
+    callbacks.on_train_end(logs=logs)
+    print(model.summary())
     # save log
     df.to_csv(os.path.join(SAVED_MODEL_PATH, 'log.csv'), index=False)
     mlflow.end_run()
