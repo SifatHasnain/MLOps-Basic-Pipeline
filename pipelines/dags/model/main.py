@@ -17,7 +17,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau
 import models
 # from utils import generate_train_dataset, loss
 from augment import transform_train, transform_val
-from models import AlexNet, CNN, Resnet, InceptionNet
+from models import AlexNet, CNN, ResNet, InceptionNet
 from train import Trainer
 from val import Val
 
