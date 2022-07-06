@@ -249,7 +249,7 @@ class Conv_Block(layers.Layer):
   
 class ResNet(Model):
     def __init__(self, input_shape, num_classes):
-        super(Resnet, self).__init__(name='resnet')
+        super(ResNet, self).__init__(name='resnet')
         # X = Input(self.input_shapes)
         self.zero_padding = ZeroPadding2D((3, 3), data_format='channels_last', input_shape=input_shape)
         
