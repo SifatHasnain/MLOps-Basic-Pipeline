@@ -1,12 +1,13 @@
-lake_dir: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/data-lake/train"
-warehouse_dir: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/data-warehouse"
+#change directory to ...storage/mnist for training with mnist
+lake_dir: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/cat_dog/data-lake/train" 
+warehouse_dir: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/cat_dog/data-warehouse"
 version: "version 1"
 log_folder: "/home/rsa-hypetune/MLOps-Basic-Pipeline/pipelines/dags/data/log"
 figure_folder: "/home/rsa-hypetune/MLOps-Basic-Pipeline/pipelines/dags/data/figures"
 
 extention: '.jpg'
-num_classes: 2
-class_names: ['cat', 'dog']
+num_classes: 2 #10 for mnist
+class_names: ['cat', 'dog']  #class_names: ['0', '1', '2', '3', '4', '5', '6','7', '8', '9']
 seed: 123
 
 # eda

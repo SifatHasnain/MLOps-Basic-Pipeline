@@ -1,19 +1,19 @@
 seed: 420
 batch_size: 100
-lr: 0.01
+lr: 0.001
 wd: 0.0005
 epochs: 50
 workers: 0
 
 # networks
 # model = "cnn"
-# model: 'alexnet'
+model: 'alexnet'
 # model = "resnet"
 # model: "inceptionv1"
 
 
-optimizer_fn: "sgd"
-# optimizer_fn: "adam"
+# optimizer_fn: "sgd"
+optimizer_fn: "adam"
 # optimizer_fn: "rmsprop"
 decay_rate: 0.1
 momentum: 0.9

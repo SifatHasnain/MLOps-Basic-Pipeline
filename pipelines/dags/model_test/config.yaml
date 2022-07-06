@@ -1,5 +1,6 @@
 # paths and directories
-data_dir: "/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/data-lake/test"
+#change directory to ...storage/mnist for training with mnist
+data_dir: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/cat_dog/data-lake/test"
 
 num_classes: 2
 class_names: ['cat', 'dog']
@@ -16,5 +17,6 @@ version: '1.0'
 # mlflow
 mlflow_experiment_name: 'Alexnet'
 mlflow_run_name: 'Experiment 1'
-mlflow_tracking_uri: 'file:/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/mlruns'
-artifact_path: "/Documents/RnDLab/mlops-deep-nn/MLOps-Basic-Pipeline/storage/artifact"
+mlflow_tracking_uri: 'file:/home/rsa-hypetune/MLOps-Basic-Pipeline/mlruns'
+#change directory to ...storage/mnist for training with mnist
+artifact_path: "/home/rsa-hypetune/MLOps-Basic-Pipeline/storage/cat_dog/artifact"

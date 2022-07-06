@@ -8,6 +8,7 @@ import logging
 import tensorflow as tf
 from tensorflow.keras.losses import SparseCategoricalCrossentropy 
 from tqdm import tqdm
+from tensorflow.keras.utils import Progbar
 
 class Val:
     def __init__(self, testloader, inception=False):
@@ -36,8 +37,10 @@ class Val:
             # correct = 0
             # total = 0
             test_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
-            bar = tqdm(enumerate(self.testloader), total=len(self.testloader), desc="Val: ")
-            for batch_id, data in bar:
+            # bar = tqdm(enumerate(self.testloader), total=len(self.testloader), desc="Val: ")
+            metrics = {'val_acc': 0.0, 'val_loss': 0.0}
+            progress_bar = Progbar(len(self.testloader), stateful_metrics=list(metrics.keys()))
+            for batch_id, data in enumerate(self.testloader):
                 callbacks.on_batch_begin(batch_id, logs=logs)
                 callbacks.on_test_batch_begin(batch_id,logs=logs)
                 inputs, labels = data[0], data[1]
@@ -51,10 +54,12 @@ class Val:
 
                 # total += labels.size(0)
                 # correct += (predicted == labels).sum().item()
-                bar.set_postfix_str('Loss='+str(tf.keras.backend.get_value(epoch_loss_avg.result()))+', Accuracy:'+str(tf.keras.backend.get_value(test_accuracy.result())))
-                logs['val_loss'] = float(test_accuracy.result())
+                # bar.set_postfix_str('Loss='+str(tf.keras.backend.get_value(epoch_loss_avg.result()))+', Accuracy:'+str(tf.keras.backend.get_value(test_accuracy.result())))
+                progress_bar.update(batch_id, values=[('acc',test_accuracy.result()),
+                                       ('loss', loss)])
+                logs['val_loss'] = float(epoch_loss_avg.result())
                 callbacks.on_test_batch_end(batch_id)
                 callbacks.on_batch_end(batch_id)
-            return tf.keras.backend.get_value(epoch_loss_avg.result()), float(test_accuracy.result()) #/len(bar), round(100*correct/total, 4)
+            return epoch_loss_avg.result().numpy(), test_accuracy.result().numpy() #/len(bar), round(100*correct/total, 4)
     
     

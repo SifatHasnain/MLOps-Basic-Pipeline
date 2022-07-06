@@ -20,9 +20,13 @@ from augment import transform_train, transform_val
 from models import AlexNet, CNN, ResNet, InceptionNet
 from train import Trainer
 from val import Val
-
+physical_devices = tf.config.list_physical_devices('GPU') 
+for device in physical_devices:
+    tf.config.experimental.set_memory_growth(device, True)
 logging.warning("Warning. ")
 tf.executing_eagerly()
+
+print(tf.executing_eagerly())
 # Configuration
 config_file = open("params/config.yaml", "r")
 config = yaml.safe_load(config_file)

@@ -69,6 +69,26 @@ class CustomDataset(Sequence):
                 self.label_list.append(1)
             elif img_path.rsplit('.')[0] == 'cat':
                 self.label_list.append(0)
+            if img_path.rsplit('.')[0] == '0':
+                self.label_list.append(0)
+            elif img_path.rsplit('.')[0] == '1':
+                self.label_list.append(1)
+            if img_path.rsplit('.')[0] == '2':
+                self.label_list.append(2)
+            elif img_path.rsplit('.')[0] == '3':
+                self.label_list.append(3)
+            if img_path.rsplit('.')[0] == '4':
+                self.label_list.append(4)
+            elif img_path.rsplit('.')[0] == '5':
+                self.label_list.append(5)
+            if img_path.rsplit('.')[0] == '6':
+                self.label_list.append(6)
+            elif img_path.rsplit('.')[0] == '7':
+                self.label_list.append(7)
+            if img_path.rsplit('.')[0] == '8':
+                self.label_list.append(8)
+            elif img_path.rsplit('.')[0] == '9':
+                self.label_list.append(9)
 
         self.transform = transform
 
