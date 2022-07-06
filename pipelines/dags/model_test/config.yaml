@@ -1,0 +1,21 @@
+# paths and directories
+data_dir: "/mnt/c/Users/BS505/GitHub_Desktop/MLOps-mnist/storage/Lake/test"
+
+num_classes: 10
+class_names: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+image_height: 28
+image_width: 28
+num_channels: 3
+# model version
+## follow this versioning rule 
+### cnn -> 1.0.
+### alexnet -> 2.0.
+### resnet -> 3.0.
+### inception -> 4.0.
+version: '1.0'
+# mlflow
+mlflow_experiment_name: 'Experiment 1'
+mlflow_run_name: ''
+mlflow_tracking_uri: 'file:/mnt/c/Users/BS505/GitHub_Desktop/MLOps-mnist/mlruns'
+artifact_path: "/mnt/c/Users/BS505/GitHub_Desktop/MLOps-mnist/storage/artifact"
